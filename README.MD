@@ -1,65 +1,32 @@
-# 🚔 YOLOv8 Pothole Detection System
-
->A computer vision project designed to identify road hazards (potholes) in real-time from video files, images, or live camera feeds.
+To **download this YOLOv8 Pothole Detection project**, follow **any one** of the methods below 👇
 
 ---
 
-## 🛠️ Features
+## ✅ Method 1: Download from GitHub (Recommended)
 
-- Three Interaction Modes:
-  1. Direct Script: Quick execution for specific test videos (app.py).
-  2. Flexible CLI: Command-line tool for images, videos, or USB cameras with custom resolutions (yolo_detect.py).
-  3. Web Dashboard: Real-time browser-based detection using Streamlit and WebRTC (LiveCamera.py).
-- Performance Toggling: Adjust confidence thresholds on the fly via the web UI or CLI arguments.
-- Multi-Source Support: Handles .mp4, .avi, .jpg, .png, and live USB streams.
+### 🔹 Step 1: Open the Repository
 
-## How To Run
- 
- - Clone The Repo
+Go to your project’s GitHub page in a browser.
 
-```bash
+### 🔹 Step 2: Download ZIP
 
-# Create Conda environment
-conda create -n YOLOv8PotholeDetection python=3.13.5 -y
+1. Click the **green “Code”** button
+2. Select **“Download ZIP”**
+3. Extract the ZIP file on your system
 
-# Activate environment
-conda activate YOLOv8PotholeDetection
-
-# Install dependencies
-pip install -r requirements.txt
-
-```
----
-
-## 💻 Usage
-
-- 1. Command Line Tool
-    ```bash
-
-# For Video Files:
-python yolo_detect.py --model "models/LessAccurate Model.pt" --source "Test/Pothole Exp1.mp4"
-
-# For USB Camera:
-python yolo_detect.py --model "models/LessAccurate Model.pt" --source "usb0" --resolution 640x480
-
-# For Single Images:
-python yolo_detect.py --model "models/LessAccurate Model.pt" --source "Test/1.png"
-
-```
-
-
-- 2. Streamlit Web Interface
+After extraction:
 
 ```bash
-# Run the live web dashboard for a user-friendly experience with a confidence slider:
-streamlit run LiveCamera.py
-
-```
-
--3 Basic Test Script
-```bash
-python app.py
+cd YOLOv8-Pothole-Detection
 ```
 
 ---
 
+## ✅ Method 2: Clone Using Git (Best for Developers)
+
+> Requires **Git** installed
+
+```bash
+git clone https://github.com/your-username/yolov8-pothole-detection.git
+cd yol
+```
