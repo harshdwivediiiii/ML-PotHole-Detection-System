@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Road hazard snapshot placeholder</title>
+  <desc id="desc">Illustrated road hazard image used as a dashboard placeholder.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </linearGradient>
+    <linearGradient id="road" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <circle cx="1050" cy="140" r="130" fill="#f97316" opacity="0.24"/>
+  <circle cx="180" cy="120" r="90" fill="#38bdf8" opacity="0.24"/>
+  <path d="M0 580 L1200 360 L1200 800 L0 800 Z" fill="url(#road)"/>
+  <path d="M540 410 L670 800" stroke="#e2e8f0" stroke-width="18" stroke-dasharray="32 26" opacity="0.8"/>
+  <ellipse cx="620" cy="560" rx="180" ry="74" fill="#020617" opacity="0.9"/>
+  <ellipse cx="620" cy="560" rx="120" ry="44" fill="#475569" opacity="0.45"/>
+  <path d="M430 615 C520 585 730 590 815 625" stroke="#fb7185" stroke-width="14" fill="none" stroke-linecap="round" opacity="0.8"/>
+  <g fill="#f8fafc" opacity="0.92" font-family="Arial, sans-serif">
+    <text x="74" y="96" font-size="42" font-weight="700">Road Fixer Authority Console</text>
+    <text x="74" y="146" font-size="26">Hazard snapshot preview</text>
+  </g>
+</svg>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Road Fixer Authority Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="dashboard-body">
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="brand-block">
+                <div class="brand-mark">RF</div>
+                <div>
+                    <p class="eyebrow">Authority Console</p>
+                    <h1>Road Fixer</h1>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-link active" data-section="overview">Overview</button>
+                <button class="nav-link" data-section="map-view">Map View</button>
+                <button class="nav-link" data-section="reports">All Reports</button>
+                <button class="nav-link" data-section="detail">Report Detail</button>
+                <button class="nav-link" data-section="analytics">Analytics</button>
+                <button class="nav-link" data-section="settings">Settings</button>
+            </nav>
+
+            <div class="sidebar-note">
+                <p>Live operations panel for road authorities handling potholes, cracks, and other surface hazards.</p>
+            </div>
+        </aside>
+
+        <main class="dashboard-main">
+            <header class="topbar">
+                <div>
+                    <p class="eyebrow">Road Infrastructure Monitoring</p>
+                    <h2>Authority Dashboard</h2>
+                </div>
+
+                <div class="topbar-meta">
+                    <div class="live-pill">
+                        <span class="live-dot"></span>
+                        <span>Live</span>
+                    </div>
+                    <div class="admin-card">
+                        <div>
+                            <strong>Admin Authority</strong>
+                            <p>Municipal Operations</p>
+                        </div>
+                        <a href="{{ url_for('index') }}" class="ghost-button">Logout</a>
+                    </div>
+                </div>
+            </header>
+
+            <section class="dashboard-section active" id="overview">
+                <div class="section-heading">
+                    <div>
+                        <h3>Overview</h3>
+                        <p>Real-time workload, trend monitoring, and priority repair queue.</p>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <article class="metric-card">
+                        <p>Total detections</p>
+                        <strong id="metric-total">0</strong>
+                        <span>All time records</span>
+                    </article>
+                    <article class="metric-card">
+                        <p>Pending repairs</p>
+                        <strong id="metric-pending">0</strong>
+                        <span>Needs action</span>
+                    </article>
+                    <article class="metric-card">
+                        <p>Critical unresolved</p>
+                        <strong id="metric-critical">0</strong>
+                        <span>Urgent hazards</span>
+                    </article>
+                    <article class="metric-card">
+                        <p>Reported today</p>
+                        <strong id="metric-today">0</strong>
+                        <span>Since midnight</span>
+                    </article>
+                </div>
+
+                <div class="chart-grid">
+                    <article class="panel chart-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h4>Detections vs resolved</h4>
+                                <p>Last 7 days</p>
+                            </div>
+                        </div>
+                        <canvas id="trendChart"></canvas>
+                    </article>
+                    <article class="panel chart-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h4>Hazards by type</h4>
+                                <p>Unresolved work mix</p>
+                            </div>
+                        </div>
+                        <canvas id="hazardChart"></canvas>
+                    </article>
+                </div>
+
+                <article class="panel table-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h4>Priority repair queue</h4>
+                            <p>Critical first, then oldest reports</p>
+                        </div>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Hazard type</th>
+                                    <th>Location</th>
+                                    <th>Severity</th>
+                                    <th>Confidence</th>
+                                    <th>Time reported</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="priorityTableBody"></tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+
+            <section class="dashboard-section" id="map-view">
+                <div class="section-heading">
+                    <div>
+                        <h3>Map View</h3>
+                        <p>Spatial triage of unresolved hazards with severity-aware pins.</p>
+                    </div>
+                </div>
+
+                <div class="map-layout">
+                    <aside class="panel filters-panel">
+                        <h4>Filters</h4>
+                        <label class="field">
+                            <span>Hazard type</span>
+                            <select id="mapHazardFilter"></select>
+                        </label>
+                        <label class="field">
+                            <span>Severity</span>
+                            <select id="mapSeverityFilter"></select>
+                        </label>
+                        <label class="field">
+                            <span>Status</span>
+                            <select id="mapStatusFilter"></select>
+                        </label>
+                        <label class="field">
+                            <span>Start date</span>
+                            <input type="date" id="mapStartDate">
+                        </label>
+                        <label class="field">
+                            <span>End date</span>
+                            <input type="date" id="mapEndDate">
+                        </label>
+                        <button type="button" id="mapApplyFilters">Apply filters</button>
+                    </aside>
+
+                    <article class="panel map-panel">
+                        <div id="hazardMap" class="map-canvas"></div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="dashboard-section" id="reports">
+                <div class="section-heading">
+                    <div>
+                        <h3>All Reports</h3>
+                        <p>Search, filter, paginate, and review every incoming hazard report.</p>
+                    </div>
+                </div>
+
+                <article class="panel table-panel">
+                    <div class="toolbar">
+                        <input type="search" id="reportSearch" placeholder="Search by location or hazard type">
+                        <select id="reportHazardFilter"></select>
+                        <select id="reportSeverityFilter"></select>
+                        <select id="reportStatusFilter"></select>
+                        <input type="date" id="reportStartDate">
+                        <input type="date" id="reportEndDate">
+                        <button type="button" id="reportFilterButton">Filter</button>
+                    </div>
+
+                    <div class="table-wrap">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Hazard type</th>
+                                    <th>Location</th>
+                                    <th>Severity</th>
+                                    <th>Confidence</th>
+                                    <th>Reported at</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportsTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination-bar">
+                        <button type="button" id="prevPage">Previous</button>
+                        <span id="paginationStatus">Page 1</span>
+                        <button type="button" id="nextPage">Next</button>
+                    </div>
+                </article>
+            </section>
+
+            <section class="dashboard-section" id="detail">
+                <div class="section-heading">
+                    <div>
+                        <h3>Report Detail</h3>
+                        <p>Operational detail view for assignment, notes, and status changes.</p>
+                    </div>
+                </div>
+
+                <div class="detail-grid">
+                    <article class="panel detail-photo-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h4>Hazard snapshot</h4>
+                                <p>Dashcam frame captured at detection time</p>
+                            </div>
+                        </div>
+                        <img id="detailImage" src="" alt="Hazard snapshot" class="detail-image">
+                    </article>
+
+                    <article class="panel detail-info-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h4>Report information</h4>
+                                <p id="detailIdLabel">Select a report from the table</p>
+                            </div>
+                        </div>
+
+                        <div class="info-list" id="detailInfo"></div>
+
+                        <form id="detailForm" class="detail-form">
+                            <label class="field">
+                                <span>Status</span>
+                                <select id="detailStatus">
+                                    <option value="pending">Pending</option>
+                                    <option value="acknowledged">Acknowledged</option>
+                                    <option value="in progress">In Progress</option>
+                                    <option value="resolved">Resolved</option>
+                                </select>
+                            </label>
+                            <label class="field">
+                                <span>Assign to field team</span>
+                                <input type="text" id="detailTeam" placeholder="Team name">
+                            </label>
+                            <label class="field">
+                                <span>Notes</span>
+                                <textarea id="detailNotes" rows="4" placeholder="Add field instructions or repair notes"></textarea>
+                            </label>
+                            <button type="submit">Save update</button>
+                            <p class="status" id="detailStatusMessage" hidden></p>
+                        </form>
+                    </article>
+                </div>
+
+                <article class="panel timeline-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <h4>Activity log</h4>
+                            <p>Every status change with time and operator</p>
+                        </div>
+                    </div>
+                    <div id="activityTimeline" class="timeline"></div>
+                </article>
+            </section>
+
+            <section class="dashboard-section" id="analytics">
+                <div class="section-heading">
+                    <div>
+                        <h3>Analytics</h3>
+                        <p>Longer-range detection patterns, severity mix, hotspots, and resolution speed.</p>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <article class="panel chart-panel wide-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h4>Detections per day</h4>
+                                <p>Last 30 days</p>
+                            </div>
+                        </div>
+                        <canvas id="thirtyDayTrendChart"></canvas>
+                    </article>
+                    <article class="panel chart-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h4>Severity breakdown</h4>
+                                <p>Critical, high, medium, low</p>
+                            </div>
+                        </div>
+                        <canvas id="severityChart"></canvas>
+                    </article>
+                    <article class="panel chart-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h4>Hazard type breakdown</h4>
+                                <p>Distribution across categories</p>
+                            </div>
+                        </div>
+                        <canvas id="hazardBreakdownChart"></canvas>
+                    </article>
+                    <article class="panel table-panel wide-panel">
+                        <div class="panel-heading">
+                            <div>
+                                <h4>Top 10 hotspot locations</h4>
+                                <p>Count, coordinates, and worst severity</p>
+                            </div>
+                            <div class="metric-inline">
+                                <span>Average resolution time</span>
+                                <strong id="averageResolution">0 days</strong>
+                            </div>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Location</th>
+                                        <th>Lat</th>
+                                        <th>Lng</th>
+                                        <th>Count</th>
+                                        <th>Worst severity</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="hotspotsTableBody"></tbody>
+                            </table>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section class="dashboard-section" id="settings">
+                <div class="section-heading">
+                    <div>
+                        <h3>Settings</h3>
+                        <p>Reference configuration for the authority operations team.</p>
+                    </div>
+                </div>
+
+                <div class="settings-grid">
+                    <article class="panel settings-card">
+                        <h4>Status badge colors</h4>
+                        <div class="badge-row">
+                            <span class="badge status-pending">Pending</span>
+                            <span class="badge status-acknowledged">Acknowledged</span>
+                            <span class="badge status-in-progress">In Progress</span>
+                            <span class="badge status-resolved">Resolved</span>
+                        </div>
+                    </article>
+
+                    <article class="panel settings-card">
+                        <h4>Severity badge colors</h4>
+                        <div class="badge-row">
+                            <span class="badge severity-critical">Critical</span>
+                            <span class="badge severity-high">High</span>
+                            <span class="badge severity-medium">Medium</span>
+                            <span class="badge severity-low">Low</span>
+                        </div>
+                    </article>
+
+                    <article class="panel settings-card wide-panel">
+                        <h4>Endpoint wiring</h4>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Dashboard section</th>
+                                        <th>API endpoint</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Summary cards</td><td><code>GET /api/dashboard/summary</code></td></tr>
+                                    <tr><td>Trend chart</td><td><code>GET /api/dashboard/trend?days=7</code></td></tr>
+                                    <tr><td>Hazard breakdown</td><td><code>GET /api/dashboard/by-hazard</code></td></tr>
+                                    <tr><td>Severity donut</td><td><code>GET /api/dashboard/by-severity</code></td></tr>
+                                    <tr><td>Priority table</td><td><code>GET /api/dashboard/priority-queue</code></td></tr>
+                                    <tr><td>Map pins</td><td><code>GET /api/detections/?status=pending</code></td></tr>
+                                    <tr><td>All reports table</td><td><code>GET /api/detections/</code></td></tr>
+                                    <tr><td>Single report detail</td><td><code>GET /api/detections/&lt;id&gt;</code></td></tr>
+                                    <tr><td>Update status</td><td><code>PATCH /api/detections/&lt;id&gt;/status</code></td></tr>
+                                    <tr><td>Hotspots table</td><td><code>GET /api/dashboard/hotspots</code></td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="{{ url_for('static', filename='admin_dashboard.js') }}"></script>
+</body>
+</html>
